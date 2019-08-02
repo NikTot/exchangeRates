@@ -77,9 +77,8 @@ namespace ExchangeRates
             });
 
             app.UseHangfireServer();
-            app.UseHangfireDashboard();
-            //BackgroundJob.Enqueue<ExchangeRateReceiver>(r => r.GetRateFromSite("https://free.currconv.com/api/v7/convert", "USD_RUB", "889e5fffbec6f73f4bc8"));
-            RecurringJob.AddOrUpdate(() => ExchangeRateReceiver.GetRateFromSite("https://free.currconv.com/api/v7/convert", "USD_RUB", "889e5fffbec6f73f4bc8"), Cron.MinuteInterval(1));
+            app.UseHangfireDashboard();            
+            RecurringJob.AddOrUpdate<ExchangeRateReceiver>(r => r.GetRateFromSite("https://www.cbr-xml-daily.ru/daily_json.js"), Cron.MinuteInterval(1));            
             app.UseStaticFiles();
             app.UseCookiePolicy();
 

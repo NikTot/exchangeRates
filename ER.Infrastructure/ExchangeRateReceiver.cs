@@ -1,16 +1,18 @@
 ﻿using AutoMapper;
 using ER.DAL;
 using ER.Infrastructure.Interfaces;
+using ER.Infrastructure.Models;
 using ER.Service.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace ER.Infrastructure
 {
-    public  class ExchangeRateReceiver : IExchangeRateReceiver
+    public class ExchangeRateReceiver : IExchangeRateReceiver
     {
         private DBContext db;
 
@@ -19,31 +21,39 @@ namespace ER.Infrastructure
             db = context;
 
         }
-        public async void GetRateFromSite(string url, string currencyPair, string apiKey)
+        public async Task GetRateFromSite(string url)
         {
-            var builder = new UriBuilder(url);            
-            builder.Query = "q=" + currencyPair + "&compact=ultra&apiKey=" + apiKey;
+            var builder = new UriBuilder(url);
             using (var client = new HttpClient())
             {
                 var result = client.GetAsync(builder.Uri).Result;
                 using (StreamReader sr = new StreamReader(result.Content.ReadAsStreamAsync().Result))
-                {
-                    var excangeRate = JsonConvert.DeserializeObject<KeyValuePair<string, double>>(sr.ReadToEnd());
-                    var entity = new RateDTO
+                {                   
+                    RootObject bankData = JsonConvert.DeserializeObject<RootObject>(await sr.ReadToEndAsync());
+                    var entity = new List<RateDTO>()
+                    {
+                        new RateDTO
                         {
                             DateAdded = DateTime.Now,
-                            ConversionPairs = excangeRate.Key,
-                            Rates = excangeRate.Value
-                        };
-                    var rate = Mapper.Map<RateDTO, Rate>(entity);
-                    await db.Rates.AddAsync(rate);
-                    db.SaveChanges();
+                            ConversionPairs = bankData.Valute.USD.CharCode + "_RUB",
+                            Rates = bankData.Valute.USD.Value                        },
+                        new RateDTO
+                        {
+                            DateAdded = DateTime.Now,
+                            ConversionPairs = bankData.Valute.EUR.CharCode + "_RUB",
+                            Rates = bankData.Valute.EUR.Value
+                        }
+                    };
+                       
+                    var rates = Mapper.Map<IEnumerable<RateDTO>, IList<Rate>>(entity);
+                    foreach (var rate in rates)
+                    {
+                        await db.Rates.AddAsync(rate);
+                        db.SaveChanges();
+                    }                    
                 }
             }
         }
-        //public async void CreateRateToBase(RateDTO entity)
-        //{
-            
         //}
     }
 }
