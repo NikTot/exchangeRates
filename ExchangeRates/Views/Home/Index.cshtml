@@ -8,18 +8,47 @@
     <tr>
         <th>
             @Html.Label("Код бумаги")
-        </th>                
+        </th>
+        <th>
+            @Html.Label("Период агрегации (мин)")
+        </th>
+        <th>
+            @Html.Label("Макс значение")
+        </th>
+        <th>
+            @Html.Label("Мин значение")
+        </th>
+        <th>
+            @Html.Label("Первое значение")
+        </th>
+        <th>
+            @Html.Label("Последнее значение")
+        </th>
         <th></th>
     </tr>
 
     @foreach (var item in Model)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ConversionPairs)
-            </td>            
-            <td>                
-            </td>            
-        </tr>
+<tr>
+    <td>
+        @Html.DisplayFor(modelItem => item.ConversionPairs)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Period)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.MaxValue)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Minvalue)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.FirstValue)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.LastValue)
+    </td>
+    <td></td>
+</tr>
     }
 </table>

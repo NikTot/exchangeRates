@@ -7,7 +7,7 @@ namespace ER.Service.Models
         public string ConversionPairs { get; set; }
 
         [Display(Name = "Период агрегации")]
-        public int Period { get; set; }
+        public double Period { get; set; }
 
         [Display(Name = "Максимальное значение")]
         public double MaxValue { get; set; }
