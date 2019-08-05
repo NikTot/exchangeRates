@@ -1,5 +1,4 @@
-﻿using ER.Service.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace ER.Infrastructure.Interfaces
 {

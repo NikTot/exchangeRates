@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace ER.Service
 {
+    /// <summary>
+    /// Сервис получение агрегированных данных по курсу валют
+    /// </summary>
     public class AgregateRateService : IAgregateRateService
     {
         private IRateService rateService;
@@ -15,6 +18,12 @@ namespace ER.Service
         {
             this.rateService = rateService;
         }
+
+        /// <summary>
+        /// Получение агрегированных данных за период
+        /// </summary>
+        /// <param name="periods">Период агрегации</param>
+        /// <returns>Агрегированные данные по курсу валют</returns>
         public async Task<IEnumerable<AgregateRateDTO>> GetAgregateRateAsync(double[] periods)
         {
             try

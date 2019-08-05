@@ -2,6 +2,7 @@
 using ER.DAL;
 using ER.Infrastructure.Interfaces;
 using ER.Infrastructure.Models;
+using ER.Service.Interfaces;
 using ER.Service.Models;
 using Newtonsoft.Json;
 using System;
@@ -10,17 +11,33 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
+/// <summary>
+/// Сервис получение курса валют с сайта
+/// </summary>
 namespace ER.Infrastructure
 {
     public class ExchangeRateReceiver : IExchangeRateReceiver
     {
-        private DBContext db;
+        private IRateService rateService;
 
-        public ExchangeRateReceiver(DBContext context)
+        public ExchangeRateReceiver(IRateService rateService)
         {
-            db = context;
+            this.rateService = rateService;
 
         }
+
+        //private DBContext db;
+
+        //public ExchangeRateReceiver(DBContext context)
+        //{
+        //    db = context;
+
+        //}
+
+        /// <summary>
+        /// Получить курс валют с сайта
+        /// </summary>
+        /// <param name="url">Url сайта с курсами валют</param>
         public async Task GetRateFromSite(string url)
         {
             var builder = new UriBuilder(url);
@@ -45,15 +62,13 @@ namespace ER.Infrastructure
                         }
                     };
                        
-                    var rates = Mapper.Map<IEnumerable<RateDTO>, IList<Rate>>(entity);
-                    foreach (var rate in rates)
+                   
+                    foreach (var rate in entity)
                     {
-                        await db.Rates.AddAsync(rate);
-                        db.SaveChanges();
+                         rateService.CreateRateAsync(rate);                       
                     }                    
                 }
             }
         }
-        //}
     }
 }
